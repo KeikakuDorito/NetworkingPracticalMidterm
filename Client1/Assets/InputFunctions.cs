@@ -13,5 +13,7 @@ public class InputFunctions : MonoBehaviour
     {
         text.text = message;
 
+        
+
     }
 }
