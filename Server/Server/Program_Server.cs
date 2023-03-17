@@ -34,7 +34,7 @@ namespace Server
 
             Console.WriteLine("Server name: {0} IP:{1}", hostinfo.HostName, ip);
 
-            IPEndPoint localEP = new IPEndPoint(ip, 8888);
+            IPEndPoint localEP = new IPEndPoint(ip, 8889);
 
             EndPoint RemoteClient = new IPEndPoint(IPAddress.Any, 0);
 
