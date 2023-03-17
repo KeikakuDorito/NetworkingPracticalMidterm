@@ -20,24 +20,39 @@ namespace Server
         // Client list
         private static List<Socket> clientSockets = new List<Socket>();
 
-        static void Main(string[] args)
+
+        public static void StartServer()
         {
             Console.WriteLine("Starting Server...");
-            server = new Socket(AddressFamily.InterNetwork, 
-                SocketType.Stream, ProtocolType.Tcp);
-            server.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 11111));
 
+            IPHostEntry hostinfo = Dns.GetHostEntry(Dns.GetHostName());
+
+            IPAddress ip = hostinfo.AddressList[1];
+
+            server = new Socket(ip.AddressFamily,
+                SocketType.Stream, ProtocolType.Udp);
+
+            Console.WriteLine("Server name: {0} IP:{1}", hostinfo.HostName, ip);
+
+            IPEndPoint localEP = new IPEndPoint(ip, 8888);
+
+            EndPoint RemotrClient = new IPEndPoint(IPAddress.Any, 0);
+
+            server.Bind(localEP);
             server.Listen(10);
-
             server.BeginAccept(new AsyncCallback(AcceptCallback), null);
-
             Thread sendThread = new Thread(new ThreadStart(SendLoop));
             sendThread.Name = "SendThread";
             sendThread.Start();
 
             Console.ReadLine();
+            
+        }
 
-
+        static void Main(string[] args)
+        {
+            StartServer();
+          
         }
 
         private static void AcceptCallback(IAsyncResult result)
