@@ -29,17 +29,29 @@ public class Client : MonoBehaviour
     public static void Startclient()
     {
 
-        
-      
+
+        try
+        {
+            IPAddress ip = IPAddress.Parse("127.0.0.1");
+            remoteEP = new IPEndPoint(ip, 8888);
+
+            clinetSoc = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+
+            Debug.Log("Establishing Connection");
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Exception: " + e.ToString());
+        }
 
 
-       
+
     }
     // Start is called before the first frame update
     void Start()
     {
         mycube = GameObject.Find("Cube");
-        ConnectedToServer();
+        Startclient();
         
     }
 
@@ -71,19 +83,7 @@ public class Client : MonoBehaviour
     {
         if (Input.text == "127.0.0.1")
         {
-            try
-            {
-                IPAddress ip = IPAddress.Parse("127.0.0.1");
-                remoteEP = new IPEndPoint(ip, 8888);
-
-                clinetSoc = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-
-                Debug.Log("Establishing Connection");
-            }
-            catch (Exception e)
-            {
-                Debug.Log("Exception: " + e.ToString());
-            }
+           
         }
     }
 }
