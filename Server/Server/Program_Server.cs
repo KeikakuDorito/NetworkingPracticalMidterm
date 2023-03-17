@@ -36,7 +36,7 @@ namespace Server
 
             IPEndPoint localEP = new IPEndPoint(ip, 8888);
 
-            EndPoint RemotrClient = new IPEndPoint(IPAddress.Any, 0);
+            EndPoint RemoteClient = new IPEndPoint(IPAddress.Any, 0);
 
             server.Bind(localEP);
             server.Listen(10);
@@ -52,7 +52,7 @@ namespace Server
         static void Main(string[] args)
         {
             StartServer();
-          
+     
         }
 
         private static void AcceptCallback(IAsyncResult result)
@@ -76,7 +76,7 @@ namespace Server
             byte[] data = new byte[rec];
             Array.Copy(buffer, data, rec);
 
-            string msg = Encoding.ASCII.GetString(data);
+            string[] msg = Encoding.ASCII.GetString(buffer,0,rec).Split(',');
 
             Console.WriteLine("Recv: " + msg);
 
