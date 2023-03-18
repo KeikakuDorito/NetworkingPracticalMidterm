@@ -35,20 +35,58 @@ namespace Server
             serverTcp = new Socket(ip.AddressFamily,
                 SocketType.Stream, ProtocolType.Tcp);
 
+            serverUdp = new Socket(ip.AddressFamily,
+                SocketType.Dgram, ProtocolType.Udp);
+
             Console.WriteLine("Server name: {0} IP:{1}", hostinfo.HostName, ip);
 
-            IPEndPoint localEP = new IPEndPoint(ip, 8888);
+            IPEndPoint localEPTcp = new IPEndPoint(ip, 8888);
+            IPEndPoint localEPUdp = new IPEndPoint(ip, 8889);
 
             EndPoint RemoteClient = new IPEndPoint(IPAddress.Any, 0);
 
-            serverTcp.Bind(localEP);
+
+            //TCP
+            serverTcp.Bind(localEPTcp);
             serverTcp.Listen(10);
             serverTcp.BeginAccept(new AsyncCallback(AcceptCallback), null);
             Thread sendThread = new Thread(new ThreadStart(SendLoop));
             sendThread.Name = "SendThread";
             sendThread.Start();
 
+
+            //UDP
+            try
+            {
+                serverUdp.Bind(localEPUdp);
+                Console.WriteLine("Waiting for data....");
+                while (true)
+                {
+                    //Might need to write a C# console client to test it
+                    Socket socket = serverUdp.Accept();
+                    int recv = socket.ReceiveFrom(buffer, ref RemoteClient);
+                    // server.SendTo()
+                    UDPclientSockets.Add(socket);
+                    Console.WriteLine("Recv from: {0}   Data: {1}",
+                        RemoteClient.ToString(), Encoding.ASCII.GetString(buffer, 0, recv));
+                    
+                    serverUdp.SendTo(buffer, RemoteClient);
+
+                   
+                }
+                //server shutdown
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+          
+
+
             Console.ReadLine();
+
+
             
         }
 
@@ -72,6 +110,7 @@ namespace Server
 
         }
 
+       
         private static void ReceiveCallback(IAsyncResult result)
         {
             Socket socket = (Socket)result.AsyncState;
