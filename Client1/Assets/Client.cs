@@ -33,7 +33,7 @@ public class Client : MonoBehaviour
         try
         {
             IPAddress ip = IPAddress.Parse("127.0.0.1");
-            remoteEP = new IPEndPoint(ip, 8888);
+            remoteEP = new IPEndPoint(ip, 8889);
 
             clinetSoc = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
@@ -58,15 +58,18 @@ public class Client : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        pos = new float[] { mycube.transform.position.x, mycube.transform.position.y, mycube.transform.position.z };
-        if (mycube.transform.position != Temp && change)
-        {
-            outBuffer = new byte[pos.Length * 4];
-            Buffer.BlockCopy(pos, 0, outBuffer, 0,outBuffer.Length);
-            clinetSoc.SendTo(outBuffer, remoteEP);
-            change = false;
-            Debug.Log(pos[0] + "," + pos[1] + "," + pos[2]);
-        }
+        //pos = new float[] { mycube.transform.position.x, mycube.transform.position.y, mycube.transform.position.z };
+        //if (mycube.transform.position != Temp && change)
+        //{
+        //    outBuffer = new byte[pos.Length * 4];
+        //    Buffer.BlockCopy(pos, 0, outBuffer, 0,outBuffer.Length);
+        //    clinetSoc.SendTo(outBuffer, remoteEP);
+        //    change = false;
+        //    Debug.Log(pos[0] + "," + pos[1] + "," + pos[2]);
+        //}
+
+        outBuffer = Encoding.ASCII.GetBytes(mycube.transform.position.x.ToString() + "," + mycube.transform.position.y.ToString() + "," + mycube.transform.position.z.ToString());
+        clinetSoc.SendTo(outBuffer, remoteEP);
 
         if (!change) 
         { 

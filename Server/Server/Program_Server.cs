@@ -14,33 +14,36 @@ namespace Server
     {
         private static byte[] buffer = new byte[512];
         private static byte[] sendBuffer = new byte[512];
-        private static Socket server;
+        private static Socket serverTcp;
+        private static Socket serverUdp;
         private static string sendMsg = "";
 
         // Client list
-        private static List<Socket> clientSockets = new List<Socket>();
+        private static List<Socket> clientSockets = new List<Socket>(); //TCP Sockets
+        private static List<Socket> UDPclientSockets = new List<Socket>(); //UDP Sockets
 
 
         public static void StartServer()
         {
+             
             Console.WriteLine("Starting Server...");
 
             IPHostEntry hostinfo = Dns.GetHostEntry(Dns.GetHostName());
 
             IPAddress ip = hostinfo.AddressList[1];
 
-            server = new Socket(ip.AddressFamily,
-                SocketType.Stream, ProtocolType.Udp);
+            serverTcp = new Socket(ip.AddressFamily,
+                SocketType.Stream, ProtocolType.Tcp);
 
             Console.WriteLine("Server name: {0} IP:{1}", hostinfo.HostName, ip);
 
-            IPEndPoint localEP = new IPEndPoint(ip, 8889);
+            IPEndPoint localEP = new IPEndPoint(ip, 8888);
 
             EndPoint RemoteClient = new IPEndPoint(IPAddress.Any, 0);
 
-            server.Bind(localEP);
-            server.Listen(10);
-            server.BeginAccept(new AsyncCallback(AcceptCallback), null);
+            serverTcp.Bind(localEP);
+            serverTcp.Listen(10);
+            serverTcp.BeginAccept(new AsyncCallback(AcceptCallback), null);
             Thread sendThread = new Thread(new ThreadStart(SendLoop));
             sendThread.Name = "SendThread";
             sendThread.Start();
@@ -57,7 +60,7 @@ namespace Server
 
         private static void AcceptCallback(IAsyncResult result)
         {
-            Socket socket = server.EndAccept(result);
+            Socket socket = serverTcp.EndAccept(result);
             Console.WriteLine("Client connected!!");
 
             clientSockets.Add(socket);
@@ -65,7 +68,7 @@ namespace Server
             socket.BeginReceive(buffer, 0, buffer.Length, 0,
                 new AsyncCallback(ReceiveCallback), socket);
 
-            server.BeginAccept(new AsyncCallback(AcceptCallback), null);
+            serverTcp.BeginAccept(new AsyncCallback(AcceptCallback), null);
 
         }
 

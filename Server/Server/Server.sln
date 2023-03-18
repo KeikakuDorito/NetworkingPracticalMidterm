@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.31911.196
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server.csproj", "{4A1EF672-82D3-488F-BA77-DD3AED85A752}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7D3E8CA1-E8D4-4515-9F31-89632DCAA75D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mutex", "..\mutex\mutex.csproj", "{46278E5F-0787-4D8E-9DC6-C8B974A7AAD0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,10 @@ Global
 		{4A1EF672-82D3-488F-BA77-DD3AED85A752}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A1EF672-82D3-488F-BA77-DD3AED85A752}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A1EF672-82D3-488F-BA77-DD3AED85A752}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46278E5F-0787-4D8E-9DC6-C8B974A7AAD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46278E5F-0787-4D8E-9DC6-C8B974A7AAD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46278E5F-0787-4D8E-9DC6-C8B974A7AAD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46278E5F-0787-4D8E-9DC6-C8B974A7AAD0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
