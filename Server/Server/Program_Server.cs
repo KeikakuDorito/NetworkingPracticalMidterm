@@ -17,10 +17,11 @@ namespace Server
         private static Socket serverTcp;
         private static Socket serverUdp;
         private static string sendMsg = "";
+        
 
         // Client list
         private static List<Socket> clientSockets = new List<Socket>(); //TCP Sockets
-        private static List<Socket> UDPclientSockets = new List<Socket>(); //UDP Sockets
+        private static List<EndPoint> UDPclientSockets = new List<EndPoint>(); //UDP Sockets
 
 
         public static void StartServer()
@@ -32,45 +33,76 @@ namespace Server
 
             IPAddress ip = hostinfo.AddressList[1];
 
-            serverTcp = new Socket(ip.AddressFamily,
-                SocketType.Stream, ProtocolType.Tcp);
+            IPAddress iptest = IPAddress.Parse("127.0.0.1");
+
+            //serverTcp = new Socket(ip.AddressFamily,
+            //    SocketType.Stream, ProtocolType.Tcp);
 
             serverUdp = new Socket(ip.AddressFamily,
                 SocketType.Dgram, ProtocolType.Udp);
 
-            Console.WriteLine("Server name: {0} IP:{1}", hostinfo.HostName, ip);
+            Console.WriteLine("Server name: {0} IP:{1}", hostinfo.HostName, iptest);
 
-            IPEndPoint localEPTcp = new IPEndPoint(ip, 8888);
-            IPEndPoint localEPUdp = new IPEndPoint(ip, 8889);
+            //IPEndPoint localEPTcp = new IPEndPoint(ip, 8888);
+   
+            
 
+
+            ////TCP for sending texts
+            //serverTcp.Bind(localEPTcp);
+            //serverTcp.Listen(10);
+            //serverTcp.BeginAccept(new AsyncCallback(AcceptCallback), null);
+            //Thread sendThread = new Thread(new ThreadStart(SendLoop));
+            //sendThread.Name = "SendThread";
+            //sendThread.Start();
+ 
+            
+            
+            //UDP for sending positions, 
+
+
+            IPEndPoint localEPUdp = new IPEndPoint(iptest, 8889);
             EndPoint RemoteClient = new IPEndPoint(IPAddress.Any, 0);
 
+            
 
-            //TCP
-            serverTcp.Bind(localEPTcp);
-            serverTcp.Listen(10);
-            serverTcp.BeginAccept(new AsyncCallback(AcceptCallback), null);
-            Thread sendThread = new Thread(new ThreadStart(SendLoop));
-            sendThread.Name = "SendThread";
-            sendThread.Start();
-
-
-            //UDP
             try
             {
                 serverUdp.Bind(localEPUdp);
                 Console.WriteLine("Waiting for data....");
+
+               
+
                 while (true)
                 {
-                    //Might need to write a C# console client to test it
-                    Socket socket = serverUdp.Accept();
-                    int recv = socket.ReceiveFrom(buffer, ref RemoteClient);
-                    // server.SendTo()
-                    UDPclientSockets.Add(socket);
-                    Console.WriteLine("Recv from: {0}   Data: {1}",
-                        RemoteClient.ToString(), Encoding.ASCII.GetString(buffer, 0, recv));
+                    int id = 0;
+
+                    if (!UDPclientSockets.Contains(RemoteClient)) {
+                        UDPclientSockets.Add(RemoteClient);
+                        
+                    }
+                   
+                    for (int client = 0; client < UDPclientSockets.Count; client++) //cycle through client list
+                    {
+                        int recv = serverUdp.ReceiveFrom(buffer, ref RemoteClient);
+                        // if (RemoteClient != UDPClients.current index or whatever)
+                        if (UDPclientSockets[client] != RemoteClient)
+                        {
+                            //Console.WriteLine("ID: " + RemoteClient.ToString());
+                            Console.WriteLine("Recv from: {0}   Data: {1}",
+                            RemoteClient.ToString(), Encoding.ASCII.GetString(buffer, 0, recv));
+
+                            serverUdp.SendTo(buffer, RemoteClient);
+                        }
+
+
+                    }
                     
-                    serverUdp.SendTo(buffer, RemoteClient);
+                        //Might need to write a C# console client to test it
+
+                        
+                    
+
 
                    
                 }
@@ -158,6 +190,17 @@ namespace Server
 
 
             }
+        }
+
+
+        public void RecievePositions()
+        {
+
+        }
+
+        public void SendPositions()
+        {
+
         }
 
     }
