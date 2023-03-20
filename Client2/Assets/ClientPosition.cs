@@ -16,7 +16,6 @@ public class ClientPosition : MonoBehaviour
     private static byte[] outBuffer = new byte[512];
     private static byte[] inBuffer = new byte[512];
     private static IPEndPoint remoteEP;
-    private static IPEndPoint listeningEP;
     private static Socket clientSoc;
     
     private static EndPoint remoteClient; //Receiving
@@ -89,6 +88,7 @@ public class ClientPosition : MonoBehaviour
         try
         {
             int recv = clientSoc.ReceiveFrom(inBuffer, ref remoteClient);
+            // server.SendTo()
 
             string[] posData = Encoding.ASCII.GetString(inBuffer, 0, recv).Split(',');
 
