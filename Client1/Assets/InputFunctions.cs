@@ -7,11 +7,21 @@ using UnityEngine.UI;
 public class InputFunctions : MonoBehaviour
 {
 
-    [SerializeField] TMP_Text text;
+    public GameObject inputCanvas;
+    public GameObject inputField;
 
-    public void ConnectToSever(string message)
+    public void connectToServer()
     {
-        text.text = message;
+        string ip = inputField.GetComponent<TMP_InputField>().text;
+        try
+        {
+            ClientPosition.instance.connectPosition(ip);
+            inputCanvas.SetActive(false);
+        }
+        catch 
+        {
+            inputField.GetComponent<TMP_InputField>().text = "INVALID ADDRESS";
+        }
 
     }
 }

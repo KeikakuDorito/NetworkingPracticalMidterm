@@ -8,8 +8,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+//Manages all movement of the Cubes of the two players
+
 public class ClientPosition : MonoBehaviour
 {
+    public static ClientPosition instance;
+    public static bool clientStarted = false;
+
+    public static string ipInput = "127.0.0.1";
 
     public GameObject clientCube;
     public GameObject remoteCube;
@@ -22,6 +28,9 @@ public class ClientPosition : MonoBehaviour
     private static EndPoint remoteClient; //Receiving
 
 
+    private Transform lastPos;
+
+
     //[SerializeField] TMP_Text Input;
     //public Canvas typingCanvas;
   //  public TMP_Text Output = null;
@@ -29,10 +38,10 @@ public class ClientPosition : MonoBehaviour
     public static void StartClient()
     {
 
+            //Try and Catch statement moved to InputFunctions.cs for a hacky way of doing error message
 
-        try
-        {
-            IPAddress ip = IPAddress.Parse("50.17.63.176");
+            //IPAddress ip = IPAddress.Parse("50.17.63.176"); //IPAddress of the Server
+            IPAddress ip = IPAddress.Parse(ipInput);
             remoteEP = new IPEndPoint(ip, 8889);
 
             clientSoc = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -55,18 +64,11 @@ public class ClientPosition : MonoBehaviour
             }
 
             Debug.Log("Establishing Connection");
-        }
-        catch (Exception e)
-        {
-            Debug.Log("Exception: " + e.ToString());
-        }
-
-
-
+            clientStarted = true;
     }
     
 
-    public void SendPosition() //Set The Position of the Blue Cube (Local Client)
+    void SendPosition() //Set The Position of the Blue Cube (Local Client)
     {
         try
         {
@@ -84,7 +86,7 @@ public class ClientPosition : MonoBehaviour
     }
 
 
-    public void RecievePosition() //Set The Position of the Green Cube (Remote Client)
+    void RecievePosition() //Set The Position of the Green Cube (Remote Client)
     {
         try
         {
@@ -104,14 +106,10 @@ public class ClientPosition : MonoBehaviour
     }
 
 
-    public void ConnectedToServer()
+    public void connectPosition(string serverAddress) //This function will be called by the Ip input thing when the client starts up
     {
-        /*
-        if (Input.text == "127.0.0.1")
-        {
-           
-        }
-        */
+        ipInput = serverAddress;
+        StartClient();
     }
 
 
@@ -120,17 +118,30 @@ public class ClientPosition : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        StartClient();
+
+        if(instance == null)
+        {
+            instance = this;
+        }
+
+        lastPos = clientCube.transform;
 
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (clientStarted)
+        {
+            if (clientCube.transform.position != lastPos.position)
+            {
+                SendPosition();
+            }
 
-        SendPosition();
-        RecievePosition();
+            lastPos = clientCube.transform;
 
+            RecievePosition();
+        }
     }
 
    
