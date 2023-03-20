@@ -5,3 +5,10 @@ C:\Users\abdul\OneDrive\Documents\Abdulla\Distributed Network\Lecture 10\Lecture
 C:\Users\abdul\OneDrive\Documents\Abdulla\Distributed Network\Lecture 10\Lecture10\mutex\obj\Debug\mutex.csproj.CoreCompileInputs.cache
 C:\Users\abdul\OneDrive\Documents\Abdulla\Distributed Network\Lecture 10\Lecture10\mutex\obj\Debug\mutex.exe
 C:\Users\abdul\OneDrive\Documents\Abdulla\Distributed Network\Lecture 10\Lecture10\mutex\obj\Debug\mutex.pdb
+C:\Users\abdul\OneDrive\Documents\Abdulla\Distributed Network\NetworkingPracticalMidterm\Server\mutex\bin\Debug\mutex.exe.config
+C:\Users\abdul\OneDrive\Documents\Abdulla\Distributed Network\NetworkingPracticalMidterm\Server\mutex\bin\Debug\mutex.exe
+C:\Users\abdul\OneDrive\Documents\Abdulla\Distributed Network\NetworkingPracticalMidterm\Server\mutex\bin\Debug\mutex.pdb
+C:\Users\abdul\OneDrive\Documents\Abdulla\Distributed Network\NetworkingPracticalMidterm\Server\mutex\obj\Debug\mutex.csproj.AssemblyReference.cache
+C:\Users\abdul\OneDrive\Documents\Abdulla\Distributed Network\NetworkingPracticalMidterm\Server\mutex\obj\Debug\mutex.csproj.CoreCompileInputs.cache
+C:\Users\abdul\OneDrive\Documents\Abdulla\Distributed Network\NetworkingPracticalMidterm\Server\mutex\obj\Debug\mutex.exe
+C:\Users\abdul\OneDrive\Documents\Abdulla\Distributed Network\NetworkingPracticalMidterm\Server\mutex\obj\Debug\mutex.pdb

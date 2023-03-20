@@ -32,7 +32,7 @@ public class ClientPosition : MonoBehaviour
 
         try
         {
-            IPAddress ip = IPAddress.Parse("127.0.0.1");
+            IPAddress ip = IPAddress.Parse("50.17.63.176");
             remoteEP = new IPEndPoint(ip, 8889);
 
             clientSoc = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);

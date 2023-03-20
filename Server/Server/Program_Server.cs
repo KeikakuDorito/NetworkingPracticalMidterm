@@ -21,19 +21,19 @@ namespace Server
 
         // Client list
         private static List<Socket> clientSockets = new List<Socket>(); //TCP Sockets
-        private static List<EndPoint> UDPclientSockets = new List<EndPoint>(); //UDP Sockets
+        private static List<EndPoint> UDPclientSockets; //UDP Sockets
 
 
         public static void StartServer()
         {
              
-            Console.WriteLine("Starting Server...");
+            Console.WriteLine("Starting Server... v6");
 
             IPHostEntry hostinfo = Dns.GetHostEntry(Dns.GetHostName());
 
             IPAddress ip = hostinfo.AddressList[1];
 
-            IPAddress iptest = IPAddress.Parse("127.0.0.1");
+            IPAddress iptest = IPAddress.Parse("172.31.54.37");
 
             //serverTcp = new Socket(ip.AddressFamily,
             //    SocketType.Stream, ProtocolType.Tcp);
@@ -77,24 +77,44 @@ namespace Server
                 {
                     int id = 0;
 
-                    if (!UDPclientSockets.Contains(RemoteClient)) {
-                        UDPclientSockets.Add(RemoteClient);
-                        
+                    if (UDPclientSockets == null)
+                    {
+                        UDPclientSockets = new List<EndPoint>()  {RemoteClient};
                     }
+                    else
+                    {
+                        if (!UDPclientSockets.Contains(RemoteClient))
+                        { //work
+                            UDPclientSockets.Add(RemoteClient);
+                        }
+                    }
+                    
                    
-                    for (int client = 0; client < UDPclientSockets.Count; client++) //cycle through client list
+                    for (int client = 0; client < UDPclientSockets.Count; client++) //cycle through client list works
                     {
                         int recv = serverUdp.ReceiveFrom(buffer, ref RemoteClient);
                         // if (RemoteClient != UDPClients.current index or whatever)
-                        if (UDPclientSockets[client] != RemoteClient)
+
+                        Console.WriteLine("Recv from: {0}   Data: {1}  Dest: {2}",
+                            RemoteClient.ToString(), Encoding.ASCII.GetString(buffer, 0, recv), UDPclientSockets[client]);
+
+                        if (RemoteClient.ToString() != UDPclientSockets[client].ToString()) //works
                         {
                             //Console.WriteLine("ID: " + RemoteClient.ToString());
-                            Console.WriteLine("Recv from: {0}   Data: {1}",
-                            RemoteClient.ToString(), Encoding.ASCII.GetString(buffer, 0, recv));
 
-                            serverUdp.SendTo(buffer, RemoteClient);
+                            Console.WriteLine("Sent To {0}",
+                                UDPclientSockets[client]);
+
+                            try
+                            {
+                                serverUdp.SendTo(buffer, UDPclientSockets[client]);
+                            }
+                            catch(SocketException se)
+                            {
+                                Console.WriteLine(se.ToString());
+                                
+                            }
                         }
-
 
                     }
                     
