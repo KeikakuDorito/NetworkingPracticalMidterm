@@ -27,8 +27,8 @@ public class ClientPosition : MonoBehaviour
     
     private static EndPoint remoteClient; //Receiving
 
-
-    private Transform lastPos;
+    Vector3 currentPos;
+    Vector3 lastPos;
 
 
     //[SerializeField] TMP_Text Input;
@@ -51,7 +51,8 @@ public class ClientPosition : MonoBehaviour
 
             try
             {
-                clientSoc.Bind(remoteEP);
+                //clientSoc.Bind(remoteEP);
+                clientSoc.Connect(remoteEP);
 
                 Debug.Log("Waiting for data....");
 
@@ -124,7 +125,8 @@ public class ClientPosition : MonoBehaviour
             instance = this;
         }
 
-        lastPos = clientCube.transform;
+        currentPos = clientCube.transform.position;
+        lastPos = clientCube.transform.position;
 
     }
 
@@ -133,12 +135,15 @@ public class ClientPosition : MonoBehaviour
     {
         if (clientStarted)
         {
-            if (clientCube.transform.position != lastPos.position)
+            currentPos = clientCube.transform.position;
+
+            if (currentPos != lastPos)
             {
                 SendPosition();
             }
+            //SendPosition();
 
-            lastPos = clientCube.transform;
+            lastPos = currentPos;
 
             RecievePosition();
         }

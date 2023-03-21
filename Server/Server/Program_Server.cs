@@ -31,9 +31,9 @@ namespace Server
 
             IPHostEntry hostinfo = Dns.GetHostEntry(Dns.GetHostName());
 
-            IPAddress ip = hostinfo.AddressList[1];
+            //IPAddress ip = hostinfo.AddressList[1];
 
-            IPAddress iptest = IPAddress.Parse("172.31.54.37");
+            IPAddress ip = IPAddress.Parse("127.0.0.1");
 
             //serverTcp = new Socket(ip.AddressFamily,
             //    SocketType.Stream, ProtocolType.Tcp);
@@ -41,7 +41,7 @@ namespace Server
             serverUdp = new Socket(ip.AddressFamily,
                 SocketType.Dgram, ProtocolType.Udp);
 
-            Console.WriteLine("Server name: {0} IP:{1}", hostinfo.HostName, iptest);
+            Console.WriteLine("Server name: {0} IP:{1}", hostinfo.HostName, ip);
 
             //IPEndPoint localEPTcp = new IPEndPoint(ip, 8888);
    
@@ -61,7 +61,7 @@ namespace Server
             //UDP for sending positions, 
 
 
-            IPEndPoint localEPUdp = new IPEndPoint(iptest, 8889);
+            IPEndPoint localEPUdp = new IPEndPoint(ip, 8889);
             EndPoint RemoteClient = new IPEndPoint(IPAddress.Any, 0);
 
             
