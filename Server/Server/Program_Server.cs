@@ -21,8 +21,7 @@ namespace Server
 
         // Client list
         private static List<Socket> clientSockets = new List<Socket>(); //TCP Sockets
-        private static List<EndPoint> UDPclientSockets; //UDP Sockets
-
+        private static List<EndPoint> UDPclientSockets = new List<EndPoint>(); //UDP Sockets
 
         public static void StartServer()
         {
@@ -64,46 +63,36 @@ namespace Server
             IPEndPoint localEPUdp = new IPEndPoint(ip, 8889);
             EndPoint RemoteClient = new IPEndPoint(IPAddress.Any, 0);
 
-            
-
             try
             {
                 serverUdp.Bind(localEPUdp);
                 Console.WriteLine("Waiting for data....");
 
-               
-
+                
                 while (true)
                 {
-                    int id = 0;
+                    int recv = serverUdp.ReceiveFrom(buffer, ref RemoteClient);
 
-                    if (UDPclientSockets == null)
-                    {
-                        UDPclientSockets = new List<EndPoint>()  {RemoteClient};
-                    }
-                    else
-                    {
-                        if (!UDPclientSockets.Contains(RemoteClient))
-                        { //work
-                            UDPclientSockets.Add(RemoteClient);
-                        }
+                    if (!UDPclientSockets.Contains(RemoteClient)) //Check if the list contains the client and if remote client has the value
+                    { //work
+                        UDPclientSockets.Add(RemoteClient);
+                        Console.WriteLine("Client Add", UDPclientSockets[0]);
                     }
                     
                    
                     for (int client = 0; client < UDPclientSockets.Count; client++) //cycle through client list works
                     {
-                        int recv = serverUdp.ReceiveFrom(buffer, ref RemoteClient);
+                        
                         // if (RemoteClient != UDPClients.current index or whatever)
 
                         Console.WriteLine("Recv from: {0}   Data: {1}  Dest: {2}",
                             RemoteClient.ToString(), Encoding.ASCII.GetString(buffer, 0, recv), UDPclientSockets[client]);
 
-                        if (RemoteClient.ToString() != UDPclientSockets[client].ToString()) //works
+                        if (RemoteClient.ToString() != UDPclientSockets[client].ToString()) //works, idk how "0.0.0.0:0" appears
                         {
                             //Console.WriteLine("ID: " + RemoteClient.ToString());
 
-                            Console.WriteLine("Sent To {0}",
-                                UDPclientSockets[client]);
+                            Console.WriteLine("Sent To {0}", UDPclientSockets[client]);
 
                             try
                             {
