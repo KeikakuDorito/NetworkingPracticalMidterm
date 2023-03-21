@@ -57,7 +57,7 @@ namespace Server
  
             
             
-            //UDP for sending positions, 
+            //UDP for sending positions
 
 
             IPEndPoint localEPUdp = new IPEndPoint(ip, 8889);
@@ -72,31 +72,33 @@ namespace Server
                 while (true)
                 {
                     int recv = serverUdp.ReceiveFrom(buffer, ref RemoteClient);
+                    
+                    Console.WriteLine("Received ({1}) from {0}", RemoteClient.ToString(), Encoding.ASCII.GetString(buffer, 0, recv)); //Print Recieve
+                    
 
                     if (!UDPclientSockets.Contains(RemoteClient)) //Check if the list contains the client and if remote client has the value
                     { //work
                         UDPclientSockets.Add(RemoteClient);
-                        Console.WriteLine("Client Add", UDPclientSockets[0]);
                     }
                     
                    
                     for (int client = 0; client < UDPclientSockets.Count; client++) //cycle through client list works
                     {
-                        
-                        // if (RemoteClient != UDPClients.current index or whatever)
 
-                        Console.WriteLine("Recv from: {0}   Data: {1}  Dest: {2}",
-                            RemoteClient.ToString(), Encoding.ASCII.GetString(buffer, 0, recv), UDPclientSockets[client]);
+                        // Psuedocode: if (RemoteClient != UDPClients.current index or whatever)
+
+                        //Received x,y,z from [C1 IP] ... Sent x,y,x to [C2 IP]
 
                         if (RemoteClient.ToString() != UDPclientSockets[client].ToString()) //works, idk how "0.0.0.0:0" appears
                         {
                             //Console.WriteLine("ID: " + RemoteClient.ToString());
 
-                            Console.WriteLine("Sent To {0}", UDPclientSockets[client]);
+                            //Console.WriteLine("Sent To {0}", UDPclientSockets[client]);
 
                             try
                             {
                                 serverUdp.SendTo(buffer, UDPclientSockets[client]);
+                                Console.WriteLine("Sent ({0}) to {1}", Encoding.ASCII.GetString(buffer, 0, recv), UDPclientSockets[client]);
                             }
                             catch(SocketException se)
                             {
