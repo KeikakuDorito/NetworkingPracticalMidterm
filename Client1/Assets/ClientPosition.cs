@@ -47,11 +47,11 @@ public class ClientPosition : MonoBehaviour
             clientSoc = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             clientSoc.Blocking = false;
 
-            remoteClient = new IPEndPoint(IPAddress.Any, 0);
+            remoteClient = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0);
 
             try
             {
-                //clientSoc.Bind(remoteEP);
+                clientSoc.Bind(remoteClient);
                 clientSoc.Connect(remoteEP);
 
                 Debug.Log("Waiting for data....");
