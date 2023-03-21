@@ -26,7 +26,7 @@ public class TextChatMessages : MonoBehaviour
         IPAddress ip = IPAddress.Parse("127.0.0.1");
 
             //Connection
-        client.Connect(ip, 9000);
+        client.Connect(ip, 8888);
         Debug.Log("Connected to Server!");
         
         //client.Bind(new IPEndPoint(ip, 0));

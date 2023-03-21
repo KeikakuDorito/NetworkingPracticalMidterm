@@ -51,9 +51,9 @@ namespace Server
             serverTcp.Bind(localEPTcp);
             serverTcp.Listen(10);
             serverTcp.BeginAccept(new AsyncCallback(AcceptCallback), null);
-            Thread sendThread = new Thread(new ThreadStart(SendLoop));
-            sendThread.Name = "SendThread";
-            sendThread.Start();
+            //Thread sendThread = new Thread(new ThreadStart(SendLoop));
+            //sendThread.Name = "SendThread";
+            //sendThread.Start();
 
 
 
@@ -146,6 +146,7 @@ namespace Server
         static void Main(string[] args)
         {
             StartServer();
+
      
         }
 
@@ -173,17 +174,62 @@ namespace Server
             string msg = Encoding.ASCII.GetString(buffer, 0, rec);
             Console.WriteLine("Recv: " + msg);
 
-            socket.BeginSend(buffer, 0, buffer.Length, 0, new AsyncCallback(SendCallback), socket);
-
+           
             socket.BeginReceive(buffer, 0, buffer.Length, 0,
                 new AsyncCallback(ReceiveCallback), socket);
+            socket.BeginSend(buffer, 0, buffer.Length, 0, new AsyncCallback(SendCallback), socket);
+
 
         }
 
         private static void SendCallback(IAsyncResult result)
         {
             Socket socket = (Socket)result.AsyncState;
-            socket.EndSend(result);
+            while (true)
+            {
+
+                if (!clientSockets.Contains(socket)) //Check if the client that sent the packet is a known user
+                { //work
+                    clientSockets.Add(socket); //If not, add the client to the list
+
+                    for (int client = 0; client < clientSockets.Count; client++) //Cycles through Client list
+                    {
+                        //Request all clients to send position
+
+                        serverTcp.EndSendTo(result); //???
+                        Console.WriteLine("New client, Sent text message to {0}", clientSockets[client]);
+
+                    }
+
+                }
+
+                //UPDATE CLIENT POSITIONS
+                for (int client = 0; client < clientSockets.Count; client++) //cycle through client list works
+                {
+
+                    // Psuedocode: if (RemoteClient != UDPClients.current index or whatever)
+
+                    //Received x,y,z from [C1 IP] ... Sent x,y,x to [C2 IP]
+
+                    if (socket.ToString() != clientSockets[client].ToString()) //works
+                    {
+                        //Console.WriteLine("ID: " + RemoteClient.ToString());
+
+                        //Console.WriteLine("Sent To {0}", UDPclientSockets[client]);
+
+                        try
+                        {
+                            socket.EndSend(result);
+                        }
+                        catch (SocketException se)
+                        {
+                            Console.WriteLine(se.ToString());
+
+                        }
+                    }
+
+                }
+            }
         }
 
         private static void SendLoop()
