@@ -19,20 +19,16 @@ public class TextChatMessages : MonoBehaviour
 
     public static void TCPConnection()
     {
-        
-       
         String send;
-       
 
-          IPAddress ip = IPAddress.Parse("127.0.0.1");
+        IPAddress ip = IPAddress.Parse("127.0.0.1");
+        IPEndPoint serverEp = new IPEndPoint(ip, 8888);
+        client = new Socket(AddressFamily.InterNetwork, 
+            SocketType.Stream, ProtocolType.Tcp);
+        remoteClient = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0);
 
-            IPEndPoint serverEp = new IPEndPoint(ip, 8888);
-             client = new Socket(AddressFamily.InterNetwork, 
-                SocketType.Stream, ProtocolType.Tcp);
-            remoteClient = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0);
-
-            //Attempting connection
-            client.Connect(serverEp);
+        //Attempting connection
+        client.Connect(serverEp);
 
 
         
