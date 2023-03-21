@@ -93,12 +93,20 @@ public class ClientPosition : MonoBehaviour
         {
             int recv = clientSoc.ReceiveFrom(inBuffer, ref remoteClient);
 
-            string[] posData = Encoding.ASCII.GetString(inBuffer, 0, recv).Split(',');
+            if(Encoding.ASCII.GetString(inBuffer, 0, recv) == "updatePos")
+            {
+                SendPosition(); //when server requests a update, send the updated position
+            }
+            else
+            {
+                string[] posData = Encoding.ASCII.GetString(inBuffer, 0, recv).Split(',');
 
-            Debug.Log("Rec from: " + remoteClient.ToString() + " Data: " + float.Parse(posData[0]) + "," + float.Parse(posData[1]) + "," + float.Parse(posData[2]));
+                Debug.Log("Rec from: " + remoteClient.ToString() + " Data: " + float.Parse(posData[0]) + "," + float.Parse(posData[1]) + "," + float.Parse(posData[2]));
 
-            //Set the position of the Cube from
-            remoteCube.transform.position = new Vector3(float.Parse(posData[0]), float.Parse(posData[1]), float.Parse(posData[2]));
+                //Set the position of the Cube from
+                remoteCube.transform.position = new Vector3(float.Parse(posData[0]), float.Parse(posData[1]), float.Parse(posData[2]));
+            }
+            
         }
         catch (Exception se)
         {

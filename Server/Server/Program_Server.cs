@@ -14,10 +14,10 @@ namespace Server
     {
         private static byte[] buffer = new byte[512];
         private static byte[] sendBuffer = new byte[512];
+        private static byte[] udpUpdateBuffer = Encoding.ASCII.GetBytes("updatePos");
         private static Socket serverTcp;
         private static Socket serverUdp;
         private static string sendMsg = "";
-        
 
         // Client list
         private static List<Socket> clientSockets = new List<Socket>(); //TCP Sockets
@@ -74,14 +74,24 @@ namespace Server
                     int recv = serverUdp.ReceiveFrom(buffer, ref RemoteClient);
                     
                     Console.WriteLine("Received ({1}) from {0}", RemoteClient.ToString(), Encoding.ASCII.GetString(buffer, 0, recv)); //Print Recieve
-                    
 
-                    if (!UDPclientSockets.Contains(RemoteClient)) //Check if the list contains the client and if remote client has the value
+
+                    if (!UDPclientSockets.Contains(RemoteClient)) //Check if the client that sent the packet is a known user
                     { //work
-                        UDPclientSockets.Add(RemoteClient);
+                        UDPclientSockets.Add(RemoteClient); //If not, add the client to the list
+
+                        for (int client = 0; client < UDPclientSockets.Count; client++) //Cycles through Client list
+                        {
+                            //Request all clients to send position
+
+                            serverUdp.SendTo(udpUpdateBuffer, UDPclientSockets[client]);
+                            Console.WriteLine("New client, Sent update request to {0}", UDPclientSockets[client]);
+
+                        }
+
                     }
                     
-                   
+                    //UPDATE CLIENT POSITIONS
                     for (int client = 0; client < UDPclientSockets.Count; client++) //cycle through client list works
                     {
 
@@ -89,7 +99,7 @@ namespace Server
 
                         //Received x,y,z from [C1 IP] ... Sent x,y,x to [C2 IP]
 
-                        if (RemoteClient.ToString() != UDPclientSockets[client].ToString()) //works, idk how "0.0.0.0:0" appears
+                        if (RemoteClient.ToString() != UDPclientSockets[client].ToString()) //works
                         {
                             //Console.WriteLine("ID: " + RemoteClient.ToString());
 
@@ -108,10 +118,10 @@ namespace Server
                         }
 
                     }
-                    
-                        //Might need to write a C# console client to test it
 
-                        
+                    //Might need to write a C# console client to test it
+
+
                     
 
 
