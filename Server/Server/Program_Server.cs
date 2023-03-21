@@ -150,18 +150,22 @@ namespace Server
      
         }
 
-        private static void AcceptCallback(IAsyncResult result)
+        private static void AcceptCallback(IAsyncResult result) //accept clients and add to list
         {
             Socket socket = serverTcp.EndAccept(result);
-            Console.WriteLine("Client connected!!");
+            Console.WriteLine("Client connected! IP: {0}", socket.RemoteEndPoint.ToString());
 
-            clientSockets.Add(socket);
-            
+            if (!clientSockets.Contains(socket)) //Check if the client that sent the packet is a known user
+            { //work
+                clientSockets.Add(socket); //If not, add the client to the list
+                Console.WriteLine("Added Client {0} to list", socket.RemoteEndPoint.ToString());
+            }
+
 
             socket.BeginReceive(buffer, 0, buffer.Length, 0,
                 new AsyncCallback(ReceiveCallback), socket);
 
-           // serverTcp.BeginAccept(new AsyncCallback(AcceptCallback), null);
+           serverTcp.BeginAccept(new AsyncCallback(AcceptCallback), null);
 
         }
 
@@ -174,87 +178,69 @@ namespace Server
             string msg = Encoding.ASCII.GetString(buffer, 0, rec);
             Console.WriteLine("Recv: " + msg);
 
-           
+            socket.BeginSend(buffer, 0, msg.Length, 0, new AsyncCallback(SendCallback), socket);
+
             socket.BeginReceive(buffer, 0, buffer.Length, 0,
                 new AsyncCallback(ReceiveCallback), socket);
-            socket.BeginSend(buffer, 0, buffer.Length, 0, new AsyncCallback(SendCallback), socket);
-
 
         }
 
         private static void SendCallback(IAsyncResult result)
         {
             Socket socket = (Socket)result.AsyncState;
-            while (true)
-            {
+            Console.WriteLine("Sending");
+            socket.EndSend(result);
 
-                if (!clientSockets.Contains(socket)) //Check if the client that sent the packet is a known user
-                { //work
-                    clientSockets.Add(socket); //If not, add the client to the list
+            //UPDATE CLIENT POSITIONS
+            //for (int client = 0; client < clientSockets.Count; client++) //cycle through client list works
+            //{
 
-                    for (int client = 0; client < clientSockets.Count; client++) //Cycles through Client list
-                    {
-                        //Request all clients to send position
+            //    if (socket.RemoteEndPoint.ToString() != clientSockets[client].RemoteEndPoint.ToString()) //works
+            //    {
+            //        //Console.WriteLine("ID: " + RemoteClient.ToString());
 
-                        serverTcp.EndSendTo(result); //???
-                        Console.WriteLine("New client, Sent text message to {0}", clientSockets[client]);
+            //        //Console.WriteLine("Sent To {0}", UDPclientSockets[client]);
 
-                    }
+            //        try
+            //        {
+            //            Console.WriteLine("Sent To {0}", clientSockets[client].RemoteEndPoint.ToString());
+            //            clientSockets[client].EndSend(result);
+            //        }
+            //        catch (SocketException se)
+            //        {
+            //            Console.WriteLine(se.ToString());
 
-                }
+            //        }
+            //    }
 
-                //UPDATE CLIENT POSITIONS
-                for (int client = 0; client < clientSockets.Count; client++) //cycle through client list works
-                {
+            //}
 
-                    // Psuedocode: if (RemoteClient != UDPClients.current index or whatever)
 
-                    //Received x,y,z from [C1 IP] ... Sent x,y,x to [C2 IP]
-
-                    if (socket.ToString() != clientSockets[client].ToString()) //works
-                    {
-                        //Console.WriteLine("ID: " + RemoteClient.ToString());
-
-                        //Console.WriteLine("Sent To {0}", UDPclientSockets[client]);
-
-                        try
-                        {
-                            socket.EndSend(result);
-                        }
-                        catch (SocketException se)
-                        {
-                            Console.WriteLine(se.ToString());
-
-                        }
-                    }
-
-                }
-            }
         }
 
-        private static void SendLoop()
-        {
-            while(true)
-            {
-                sendBuffer = Encoding.ASCII.GetBytes(sendMsg);
+        //private static void SendLoop()
+        //{
+        //    while(true)
+        //    {
+        //        sendBuffer = Encoding.ASCII.GetBytes(sendMsg);
 
-                foreach (var socket in clientSockets)
-                {
-                    Console.WriteLine("Sent to: " + 
-                        socket.RemoteEndPoint.ToString());
+        //        foreach (var socket in clientSockets)
+        //        {
+        //            Console.WriteLine("Sent to: " + 
+        //                socket.RemoteEndPoint.ToString());
 
-                    socket.BeginSend(sendBuffer, 0, sendBuffer.Length,
-                            0, new AsyncCallback(SendCallback), socket);
+        //            socket.BeginSend(sendBuffer, 0, sendBuffer.Length,
+        //                    0, new AsyncCallback(SendCallback), socket);
 
-                }
+        //        }
 
-                sendMsg = "";
-                Thread.Sleep(1000);
+        //        sendMsg = "";
+        //        Thread.Sleep(1000);
 
 
 
-            }
-        }
+        //    }
+        //}
 
 
         //public void RecievePositions()

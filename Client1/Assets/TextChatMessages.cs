@@ -31,32 +31,22 @@ public class TextChatMessages : MonoBehaviour
         
         //client.Bind(new IPEndPoint(ip, 0));
 
-
+        
         client.BeginReceive(buffer, 0, buffer.Length, 0, new AsyncCallback(RecieveText), client);
 
     }
 
-    private static void RecieveText(IAsyncResult results)
+    public static void RecieveText(IAsyncResult results)
     {
 
         //string text = inputField.GetComponent<TMP_InputField>().text;
+        Socket socket = (Socket)results.AsyncState;
+        int recv = socket.EndReceive(results);
 
-        try
-        {
-            Socket socket = (Socket)results.AsyncState;
-            int recv = socket.EndReceive(results);
-
-            Debug.Log("Recieved From " + remoteClient.ToString() + Encoding.ASCII.GetString(buffer, 0, recv));
+        Debug.Log("Recieved: " + Encoding.ASCII.GetString(buffer, 0, recv));
 
 
-            socket.BeginReceive(buffer, 0, buffer.Length, 0,
-                    new AsyncCallback(RecieveText), socket);
-        }
-        catch(Exception e)
-        {
-            Debug.Log(e.ToString());
-        }
-
+        socket.BeginReceive(buffer, 0, buffer.Length, 0, new AsyncCallback(RecieveText), socket);
 
     }
 
