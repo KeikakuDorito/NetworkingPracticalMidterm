@@ -111,6 +111,7 @@ public class ClientPosition : MonoBehaviour
     {
         ipInput = serverAddress;
         StartClient();
+        SendPosition(); //initial pos update
     }
 
 
