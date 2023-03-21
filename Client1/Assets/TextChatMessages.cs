@@ -29,7 +29,7 @@ public class TextChatMessages : MonoBehaviour
 
         //Attempting connection
         client.Connect(serverEp);
-
+        client.Bind(remoteClient);
 
         
             
@@ -46,13 +46,13 @@ public class TextChatMessages : MonoBehaviour
         //string text = inputField.GetComponent<TMP_InputField>().text;
 
         int recv = client.Receive(buffer);
-        Debug.Log("Recieved:{0}" + Encoding.ASCII.GetString(buffer,0,recv));
+        Debug.Log("Recieved From " + remoteClient.ToString() + Encoding.ASCII.GetString(buffer, 0, recv));
    
         
     }
 
 
-    void SendText()
+   public void SendText()
     {
         string text = inputField.GetComponent<TMP_InputField>().text;
         byte[] chat = Encoding.ASCII.GetBytes(text);
@@ -62,12 +62,19 @@ public class TextChatMessages : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        TCPConnection();  
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(inputField.GetComponent<TMP_InputField>().text != null && Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter))
+        {
+            SendText();
+            inputField.GetComponent<TMP_InputField>().text = "";
+        }
+
+        RecieveText();
         
     }
 }
