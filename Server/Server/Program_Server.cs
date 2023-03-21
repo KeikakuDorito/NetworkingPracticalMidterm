@@ -34,29 +34,29 @@ namespace Server
 
             IPAddress ip = IPAddress.Parse("127.0.0.1");
 
-            //serverTcp = new Socket(ip.AddressFamily,
-            //    SocketType.Stream, ProtocolType.Tcp);
+            serverTcp = new Socket(ip.AddressFamily,
+                SocketType.Stream, ProtocolType.Tcp);
 
             serverUdp = new Socket(ip.AddressFamily,
                 SocketType.Dgram, ProtocolType.Udp);
 
             Console.WriteLine("Server name: {0} IP:{1}", hostinfo.HostName, ip);
 
-            //IPEndPoint localEPTcp = new IPEndPoint(ip, 8888);
-   
-            
+            IPEndPoint localEPTcp = new IPEndPoint(ip, 8888);
+
+
 
 
             ////TCP for sending texts
-            //serverTcp.Bind(localEPTcp);
-            //serverTcp.Listen(10);
-            //serverTcp.BeginAccept(new AsyncCallback(AcceptCallback), null);
-            //Thread sendThread = new Thread(new ThreadStart(SendLoop));
-            //sendThread.Name = "SendThread";
-            //sendThread.Start();
- 
-            
-            
+            serverTcp.Bind(localEPTcp);
+            serverTcp.Listen(10);
+            serverTcp.BeginAccept(new AsyncCallback(AcceptCallback), null);
+            Thread sendThread = new Thread(new ThreadStart(SendLoop));
+            sendThread.Name = "SendThread";
+            sendThread.Start();
+
+
+
             //UDP for sending positions
 
 
@@ -155,11 +155,12 @@ namespace Server
             Console.WriteLine("Client connected!!");
 
             clientSockets.Add(socket);
+            
 
             socket.BeginReceive(buffer, 0, buffer.Length, 0,
                 new AsyncCallback(ReceiveCallback), socket);
 
-            serverTcp.BeginAccept(new AsyncCallback(AcceptCallback), null);
+           // serverTcp.BeginAccept(new AsyncCallback(AcceptCallback), null);
 
         }
 
@@ -168,15 +169,11 @@ namespace Server
         {
             Socket socket = (Socket)result.AsyncState;
             int rec = socket.EndReceive(result);
-            byte[] data = new byte[rec];
-            Array.Copy(buffer, data, rec);
 
-            string[] msg = Encoding.ASCII.GetString(buffer,0,rec).Split(',');
-
+            string msg = Encoding.ASCII.GetString(buffer, 0, rec);
             Console.WriteLine("Recv: " + msg);
 
-            ////// Here is where you protect the resource (buffer)
-            sendMsg += " " + msg;
+            socket.BeginSend(buffer, 0, buffer.Length, 0, new AsyncCallback(SendCallback), socket);
 
             socket.BeginReceive(buffer, 0, buffer.Length, 0,
                 new AsyncCallback(ReceiveCallback), socket);
@@ -214,15 +211,15 @@ namespace Server
         }
 
 
-        public void RecievePositions()
-        {
+        //public void RecievePositions()
+        //{
 
-        }
+        //}
 
-        public void SendPositions()
-        {
+        //public void SendPositions()
+        //{
 
-        }
+        //}
 
     }
 }
