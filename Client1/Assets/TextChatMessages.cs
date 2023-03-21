@@ -12,69 +12,79 @@ public class TextChatMessages : MonoBehaviour
 
     public static TextChatMessages instance;
     private static EndPoint remoteClient;
-    byte[] buffer = new byte[512];
-    byte[] outbuffer = new byte[512];
+    private static byte[] buffer = new byte[512];
+    private static byte[] outbuffer = new byte[512];
     public GameObject inputField;
-    private static Socket client;
+    private static Socket client = new Socket(AddressFamily.InterNetwork,
+            SocketType.Stream, ProtocolType.Tcp);
 
     public static void TCPConnection()
     {
-        String send;
+
+        //String send;
 
         IPAddress ip = IPAddress.Parse("127.0.0.1");
-        IPEndPoint serverEp = new IPEndPoint(ip, 8888);
-        client = new Socket(AddressFamily.InterNetwork, 
-            SocketType.Stream, ProtocolType.Tcp);
-        remoteClient = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0);
 
-        //Attempting connection
-        client.Connect(serverEp);
-        client.Bind(remoteClient);
+            //Connection
+        client.Connect(ip, 9000);
+        Debug.Log("Connected to Server!");
+        
+        //client.Bind(new IPEndPoint(ip, 0));
 
-        
-            
-        
 
-        
+        client.BeginReceive(buffer, 0, buffer.Length, 0, new AsyncCallback(RecieveText), client);
 
-        
     }
 
-    void RecieveText()
+    private static void RecieveText(IAsyncResult results)
     {
 
         //string text = inputField.GetComponent<TMP_InputField>().text;
 
-        int recv = client.Receive(buffer);
-        Debug.Log("Recieved From " + remoteClient.ToString() + Encoding.ASCII.GetString(buffer, 0, recv));
-   
-        
+        try
+        {
+            Socket socket = (Socket)results.AsyncState;
+            int recv = socket.EndReceive(results);
+
+            Debug.Log("Recieved From " + remoteClient.ToString() + Encoding.ASCII.GetString(buffer, 0, recv));
+
+
+            socket.BeginReceive(buffer, 0, buffer.Length, 0,
+                    new AsyncCallback(RecieveText), socket);
+        }
+        catch(Exception e)
+        {
+            Debug.Log(e.ToString());
+        }
+
+
     }
 
 
    public void SendText()
     {
         string text = inputField.GetComponent<TMP_InputField>().text;
-        byte[] chat = Encoding.ASCII.GetBytes(text);
-        client.Send(chat);
-
+        outbuffer = Encoding.ASCII.GetBytes(text);
+        client.Send(outbuffer);
+        
     }
+
+
     // Start is called before the first frame update
     void Start()
     {
-        TCPConnection();  
+        TCPConnection();
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(inputField.GetComponent<TMP_InputField>().text != null && Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter))
+        if(inputField.GetComponent<TMP_InputField>().text != "" && Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter))
         {
             SendText();
             inputField.GetComponent<TMP_InputField>().text = "";
         }
-
-        RecieveText();
         
     }
 }
