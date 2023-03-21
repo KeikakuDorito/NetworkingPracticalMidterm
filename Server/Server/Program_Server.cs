@@ -51,9 +51,9 @@ namespace Server
             serverTcp.Bind(localEPTcp);
             serverTcp.Listen(10);
             serverTcp.BeginAccept(new AsyncCallback(AcceptCallback), null);
-            //Thread sendThread = new Thread(new ThreadStart(SendLoop));
-            //sendThread.Name = "SendThread";
-            //sendThread.Start();
+            Thread sendThread = new Thread(new ThreadStart(SendLoop));
+            sendThread.Name = "SendThread";
+            sendThread.Start();
 
 
 
@@ -218,29 +218,29 @@ namespace Server
 
         }
 
-        //private static void SendLoop()
-        //{
-        //    while(true)
-        //    {
-        //        sendBuffer = Encoding.ASCII.GetBytes(sendMsg);
+        private static void SendLoop()
+        {
+            while (true)
+            {
+                sendBuffer = Encoding.ASCII.GetBytes(sendMsg);
 
-        //        foreach (var socket in clientSockets)
-        //        {
-        //            Console.WriteLine("Sent to: " + 
-        //                socket.RemoteEndPoint.ToString());
+                foreach (var socket in clientSockets)
+                {
+                    Console.WriteLine("Sent to: " +
+                        socket.RemoteEndPoint.ToString());
 
-        //            socket.BeginSend(sendBuffer, 0, sendBuffer.Length,
-        //                    0, new AsyncCallback(SendCallback), socket);
+                    socket.BeginSend(sendBuffer, 0, sendBuffer.Length,
+                            0, new AsyncCallback(SendCallback), socket);
 
-        //        }
+                }
 
-        //        sendMsg = "";
-        //        Thread.Sleep(1000);
+                sendMsg = "";
+                Thread.Sleep(1000);
 
 
 
-        //    }
-        //}
+            }
+        }
 
 
         //public void RecievePositions()
