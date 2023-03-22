@@ -173,7 +173,7 @@ namespace Server
             Array.Copy(buffer, data, rec);
 
             string msg = Encoding.ASCII.GetString(data);
-            Console.WriteLine("Recv: " + msg);
+            Console.WriteLine("Received message {0} from {1}", msg, socket.RemoteEndPoint.ToString());
 
             sendMsg += " " + msg;
             socket.BeginReceive(buffer, 0, buffer.Length, 0,
@@ -224,6 +224,11 @@ namespace Server
 
                     socket.BeginSend(sendBuffer, 0, sendBuffer.Length,
                             0, new AsyncCallback(SendCallback), socket);
+
+                    if(sendMsg != "")
+                    {
+                        Console.WriteLine("Sent message {0} from {1}", sendMsg, socket.RemoteEndPoint.ToString());
+                    }
 
                 }
 
