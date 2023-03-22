@@ -155,12 +155,7 @@ namespace Server
             Socket socket = serverTcp.EndAccept(result);
             Console.WriteLine("Client connected! IP: {0}", socket.RemoteEndPoint.ToString());
 
-            if (!clientSockets.Contains(socket)) //Check if the client that sent the packet is a known user
-            { //work
-                clientSockets.Add(socket); //If not, add the client to the list
-                Console.WriteLine("Added Client {0} to list", socket.RemoteEndPoint.ToString());
-            }
-
+            clientSockets.Add(socket);
 
             socket.BeginReceive(buffer, 0, buffer.Length, 0,
                 new AsyncCallback(ReceiveCallback), socket);
@@ -174,12 +169,13 @@ namespace Server
         {
             Socket socket = (Socket)result.AsyncState;
             int rec = socket.EndReceive(result);
+            byte[] data = new byte[rec];
+            Array.Copy(buffer, data, rec);
 
-            string msg = Encoding.ASCII.GetString(buffer, 0, rec);
+            string msg = Encoding.ASCII.GetString(data);
             Console.WriteLine("Recv: " + msg);
 
-            socket.BeginSend(buffer, 0, msg.Length, 0, new AsyncCallback(SendCallback), socket);
-
+            sendMsg += " " + msg;
             socket.BeginReceive(buffer, 0, buffer.Length, 0,
                 new AsyncCallback(ReceiveCallback), socket);
 
