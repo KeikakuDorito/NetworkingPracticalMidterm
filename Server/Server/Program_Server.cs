@@ -85,7 +85,7 @@ namespace Server
                             //Request all clients to send position
 
                             serverUdp.SendTo(udpUpdateBuffer, UDPclientSockets[client]);
-                            Console.WriteLine("New client, Sent update request to {0}", UDPclientSockets[client]);
+                            //Console.WriteLine("New client, Sent update request to {0}", UDPclientSockets[client]);
 
                         }
 

@@ -15,6 +15,14 @@ public class InputFunctions : MonoBehaviour
         string ip = inputField.GetComponent<TMP_InputField>().text;
         try
         {
+            TextChatMessages.instance.connectChat(ip);
+        }
+        catch
+        {
+            inputField.GetComponent<TMP_InputField>().text = "NO SERVER FOUND";
+        }
+        try
+        {
             ClientPosition.instance.connectPosition(ip);
             inputCanvas.SetActive(false);
         }

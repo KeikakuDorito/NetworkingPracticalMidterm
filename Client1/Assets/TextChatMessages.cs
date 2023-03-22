@@ -18,12 +18,14 @@ public class TextChatMessages : MonoBehaviour
     private static Socket client = new Socket(AddressFamily.InterNetwork,
             SocketType.Stream, ProtocolType.Tcp);
 
+    public static string ipInput = "127.0.0.1";
+
     public static void TCPConnection()
     {
 
         //String send;
 
-        IPAddress ip = IPAddress.Parse("127.0.0.1");
+        IPAddress ip = IPAddress.Parse(ipInput);
 
             //Connection
         client.Connect(ip, 8888);
@@ -59,12 +61,20 @@ public class TextChatMessages : MonoBehaviour
         
     }
 
+    public void connectChat(string serverAddress)
+    {
+        ipInput = serverAddress;
+        TCPConnection(); //Begin Connection to server
+    }
+
 
     // Start is called before the first frame update
     void Start()
     {
-        TCPConnection();
-
+        if (instance == null)
+        {
+            instance = this;
+        }
     }
 
     // Update is called once per frame
