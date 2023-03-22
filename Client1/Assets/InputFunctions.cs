@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class InputFunctions : MonoBehaviour
 {
-
     public GameObject inputCanvas;
     public GameObject inputField;
 

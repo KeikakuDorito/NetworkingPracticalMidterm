@@ -18,6 +18,7 @@ namespace Server
         private static Socket serverTcp;
         private static Socket serverUdp;
         private static string sendMsg = "";
+        private static string tempmsg = "";
 
         // Client list
         private static List<Socket> clientSockets = new List<Socket>(); //TCP Sockets
@@ -54,8 +55,6 @@ namespace Server
             Thread sendThread = new Thread(new ThreadStart(SendLoop));
             sendThread.Name = "SendThread";
             sendThread.Start();
-
-
 
             //UDP for sending positions
 
@@ -177,8 +176,7 @@ namespace Server
             if(msg == "/quit")
             {
                 Console.WriteLine("{0} has initiated a disconnect", socket.RemoteEndPoint.ToString());
-                msg = "[" + socket.RemoteEndPoint.ToString() + "] has disconnected from the server";
-                socket.Shutdown(SocketShutdown.Both);
+                sendMsg = "[" + socket.RemoteEndPoint.ToString() + "] has disconnected from the server";
                 socket.Close();
                 clientSockets.Remove(socket);
                 return;
@@ -187,7 +185,7 @@ namespace Server
             {
                 Console.WriteLine("Received message {0} from {1}", msg, socket.RemoteEndPoint.ToString());
             }
-            sendMsg += " " + msg;
+            sendMsg += socket.RemoteEndPoint.ToString() + ": " + msg;
             socket.BeginReceive(buffer, 0, buffer.Length, 0,
                 new AsyncCallback(ReceiveCallback), socket);
 
@@ -235,10 +233,10 @@ namespace Server
                 foreach (var socket in clientSockets)
                 {
 
-                    socket.BeginSend(sendBuffer, 0, sendBuffer.Length,
-                            0, new AsyncCallback(SendCallback), socket);
                     if (sendMsg != "")
                     {
+                        socket.BeginSend(sendBuffer, 0, sendBuffer.Length,
+                            0, new AsyncCallback(SendCallback), socket);
                         Console.WriteLine("Sent message {0} to {1}", sendMsg, socket.RemoteEndPoint.ToString());
                     }
 

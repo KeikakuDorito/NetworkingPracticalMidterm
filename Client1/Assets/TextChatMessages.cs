@@ -49,7 +49,10 @@ public class TextChatMessages : MonoBehaviour
         Debug.Log("Recieved: " + Encoding.ASCII.GetString(buffer, 0, recv));
 
         string msg = Encoding.ASCII.GetString(buffer, 0, recv);
-        chatText.text +=   socket.RemoteEndPoint.ToString() + ": " + msg + "\n";
+        if (msg != "")
+        {
+            chatText.text += msg + "\n"; //set chat msg
+        }
         
         socket.BeginReceive(buffer, 0, buffer.Length, 0, new AsyncCallback(RecieveText), socket);
 
