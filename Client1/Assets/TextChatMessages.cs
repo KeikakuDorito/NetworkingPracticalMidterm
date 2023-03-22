@@ -15,12 +15,13 @@ public class TextChatMessages : MonoBehaviour
     private static byte[] buffer = new byte[512];
     private static byte[] outbuffer = new byte[512];
     public GameObject inputField;
+    public TMP_Text chatText = null;
     private static Socket client = new Socket(AddressFamily.InterNetwork,
             SocketType.Stream, ProtocolType.Tcp);
 
     public static string ipInput = "127.0.0.1";
 
-    public static void TCPConnection()
+    public  void TCPConnection()
     {
 
         //String send;
@@ -38,7 +39,7 @@ public class TextChatMessages : MonoBehaviour
 
     }
 
-    public static void RecieveText(IAsyncResult results)
+    public void RecieveText(IAsyncResult results)
     {
 
         //string text = inputField.GetComponent<TMP_InputField>().text;
@@ -47,7 +48,9 @@ public class TextChatMessages : MonoBehaviour
 
         Debug.Log("Recieved: " + Encoding.ASCII.GetString(buffer, 0, recv));
 
-
+        string msg = Encoding.ASCII.GetString(buffer, 0, recv);
+        chatText.text +=   socket.RemoteEndPoint.ToString() + ": " + msg + "\n";
+        
         socket.BeginReceive(buffer, 0, buffer.Length, 0, new AsyncCallback(RecieveText), socket);
 
     }
@@ -55,6 +58,7 @@ public class TextChatMessages : MonoBehaviour
 
    public void SendText()
     {
+        
         string text = inputField.GetComponent<TMP_InputField>().text;
         outbuffer = Encoding.ASCII.GetBytes(text);
         client.Send(outbuffer);
@@ -67,6 +71,18 @@ public class TextChatMessages : MonoBehaviour
         TCPConnection(); //Begin Connection to server
     }
 
+
+    void initiateDisconnect()
+    {
+        outbuffer = Encoding.ASCII.GetBytes("/quit");
+        client.Send(outbuffer);
+    }
+
+
+    void OnApplicationQuit()
+    {
+        initiateDisconnect();
+    }
 
     // Start is called before the first frame update
     void Start()
