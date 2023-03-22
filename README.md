@@ -26,3 +26,4 @@ The server is currently hardcoded to **127.0.0.1** but can be changed in the sou
 - The server will receive the positions fro and send them to the client
 - The client will only send positional information to the server when the position has changed.
 - In order to send chat messages, make sure you type in the IP first and then type your message in the bottom left input box UI. Press Enter in order to send the message.
+- Disconnect from the server by typing "/quit" in the chat box or quitting the application.
