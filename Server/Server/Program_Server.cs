@@ -173,8 +173,20 @@ namespace Server
             Array.Copy(buffer, data, rec);
 
             string msg = Encoding.ASCII.GetString(data);
-            Console.WriteLine("Received message {0} from {1}", msg, socket.RemoteEndPoint.ToString());
 
+            if(msg == "/quit")
+            {
+                Console.WriteLine("{0} has initiated a disconnect", socket.RemoteEndPoint.ToString());
+                msg = "[" + socket.RemoteEndPoint.ToString() + "] has disconnected from the server";
+                socket.Shutdown(SocketShutdown.Both);
+                socket.Close();
+                clientSockets.Remove(socket);
+                return;
+            }
+            else
+            {
+                Console.WriteLine("Received message {0} from {1}", msg, socket.RemoteEndPoint.ToString());
+            }
             sendMsg += " " + msg;
             socket.BeginReceive(buffer, 0, buffer.Length, 0,
                 new AsyncCallback(ReceiveCallback), socket);
@@ -215,6 +227,7 @@ namespace Server
 
         private static void SendLoop()
         {
+
             while (true)
             {
                 sendBuffer = Encoding.ASCII.GetBytes(sendMsg);
@@ -224,10 +237,9 @@ namespace Server
 
                     socket.BeginSend(sendBuffer, 0, sendBuffer.Length,
                             0, new AsyncCallback(SendCallback), socket);
-
-                    if(sendMsg != "")
+                    if (sendMsg != "")
                     {
-                        Console.WriteLine("Sent message {0} from {1}", sendMsg, socket.RemoteEndPoint.ToString());
+                        Console.WriteLine("Sent message {0} to {1}", sendMsg, socket.RemoteEndPoint.ToString());
                     }
 
                 }
