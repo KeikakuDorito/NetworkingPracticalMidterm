@@ -25,8 +25,8 @@ namespace Server
 
         public static void StartServer()
         {
-             
-            Console.WriteLine("Starting Server... v6");
+            Console.WriteLine("Abdalla Mohamed (100795120) and Nathan Woo (100787454)");
+            Console.WriteLine("Starting Server...");
 
             IPHostEntry hostinfo = Dns.GetHostEntry(Dns.GetHostName());
 
@@ -153,7 +153,7 @@ namespace Server
         private static void AcceptCallback(IAsyncResult result) //accept clients and add to list
         {
             Socket socket = serverTcp.EndAccept(result);
-            Console.WriteLine("Client connected! IP: {0}", socket.RemoteEndPoint.ToString());
+            Console.WriteLine("Client connected     IP: {0}", socket.RemoteEndPoint.ToString());
 
             clientSockets.Add(socket);
 
@@ -184,7 +184,6 @@ namespace Server
         private static void SendCallback(IAsyncResult result)
         {
             Socket socket = (Socket)result.AsyncState;
-            Console.WriteLine("Sending");
             socket.EndSend(result);
 
             //UPDATE CLIENT POSITIONS
@@ -222,8 +221,6 @@ namespace Server
 
                 foreach (var socket in clientSockets)
                 {
-                    Console.WriteLine("Sent to: " +
-                        socket.RemoteEndPoint.ToString());
 
                     socket.BeginSend(sendBuffer, 0, sendBuffer.Length,
                             0, new AsyncCallback(SendCallback), socket);
