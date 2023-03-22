@@ -14,6 +14,8 @@ namespace Server
     {
         private static byte[] buffer = new byte[512];
         private static byte[] sendBuffer = new byte[512];
+        private static byte[] chatbuffer = new byte[512];
+        private static byte[] chatsendBuffer = new byte[512];
         private static byte[] udpUpdateBuffer = Encoding.ASCII.GetBytes("updatePos");
         private static Socket serverTcp;
         private static Socket serverUdp;
@@ -156,7 +158,7 @@ namespace Server
 
             clientSockets.Add(socket);
 
-            socket.BeginReceive(buffer, 0, buffer.Length, 0,
+            socket.BeginReceive(chatbuffer, 0, chatbuffer.Length, 0,
                 new AsyncCallback(ReceiveCallback), socket);
 
            serverTcp.BeginAccept(new AsyncCallback(AcceptCallback), null);
@@ -169,7 +171,7 @@ namespace Server
             Socket socket = (Socket)result.AsyncState;
             int rec = socket.EndReceive(result);
             byte[] data = new byte[rec];
-            Array.Copy(buffer, data, rec);
+            Array.Copy(chatbuffer, data, rec);
 
             string msg = Encoding.ASCII.GetString(data);
 
@@ -186,7 +188,7 @@ namespace Server
                 Console.WriteLine("Received message {0} from {1}", msg, socket.RemoteEndPoint.ToString());
             }
             sendMsg += socket.RemoteEndPoint.ToString() + ": " + msg;
-            socket.BeginReceive(buffer, 0, buffer.Length, 0,
+            socket.BeginReceive(chatbuffer, 0, chatbuffer.Length, 0,
                 new AsyncCallback(ReceiveCallback), socket);
 
         }
@@ -228,14 +230,14 @@ namespace Server
 
             while (true)
             {
-                sendBuffer = Encoding.ASCII.GetBytes(sendMsg);
+                chatsendBuffer = Encoding.ASCII.GetBytes(sendMsg);
 
                 foreach (var socket in clientSockets)
                 {
 
                     if (sendMsg != "")
                     {
-                        socket.BeginSend(sendBuffer, 0, sendBuffer.Length,
+                        socket.BeginSend(chatsendBuffer, 0, chatsendBuffer.Length,
                             0, new AsyncCallback(SendCallback), socket);
                         Console.WriteLine("Sent message {0} to {1}", sendMsg, socket.RemoteEndPoint.ToString());
                     }
